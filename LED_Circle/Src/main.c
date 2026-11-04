@@ -69,7 +69,6 @@ int main(void){
 			led_set(j);             /* this LED on */
 			delay_ms(ms);
 			led_reset(j);           /* this LED off */
-			delay_ms(ms);           /* dark gap before the next one */
 		}
 	}
 }

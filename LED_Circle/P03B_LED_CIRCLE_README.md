@@ -1,6 +1,6 @@
 # P03b: LED circle (bare-metal)
 
-Light the four user LEDs on the STM32F4-Discovery board one at a time, moving round the ring. Each LED is on for 500 ms, followed by a 500 ms dark gap before the next one lights. Direct register access and a busy-wait delay. No HAL, no CubeMX.
+Light the four user LEDs on the STM32F4-Discovery board one at a time, moving round the ring with no gap. Each LED is on for 500 ms, then the light jumps straight to the next one. Direct register access and a busy-wait delay. No HAL, no CubeMX.
 
 ## Hardware
 - Board: STM32F407G-DISC1 (STM32F4-Discovery)
@@ -15,10 +15,9 @@ Light the four user LEDs on the STM32F4-Discovery board one at a time, moving ro
 **Loop, repeated forever:** for each pin from 12 to 15:
 1. Switch this LED on.
 2. Wait 500 ms.
-3. Switch this LED off.
-4. Wait 500 ms (dark gap).
+3. Switch this LED off. The loop moves straight on to the next pin, so the next LED lights immediately.
 
-Only one LED is ever on at a time, so the light appears to move round the ring.
+Only one LED is ever on at a time, so the light appears to travel smoothly round the ring.
 
 `led_set(pin)` and `led_reset(pin)` take a pin number and change only that pin's bit in ODR, so the same two functions work for all four LEDs.
 
@@ -29,7 +28,7 @@ Only one LED is ever on at a time, so the light appears to move round the ring.
 | GPIOD_MODER | 0x4002 0C00 | 31:24 (MODER12 to MODER15) | each field cleared, then set to 01 | PD12 to PD15 = outputs |
 | GPIOD_ODR | 0x4002 0C14 | 12 to 15, one at a time | set / clear | one LED on / off |
 
-All values come from RM0090 (reference manual, Rev __) and UM1472 (board user manual).
+All values come from RM0090 and UM1472.
 
 ## Build and run
-Open the project in STM32CubeIDE, build with the hammer icon, then click Run. The LEDs light one at a time, moving round the ring, with a short dark gap between each one.
+Open the project in STM32CubeIDE, build with the hammer icon, then click Run. The light travels round the ring, one LED at a time, 500 ms each.
