@@ -3,8 +3,8 @@
  *
  * Switches the four user LEDs on the STM32F4-Discovery on one by one
  * until all are lit, then off one by one in the same order, 500 ms per
- * step, using direct register access and a busy-wait delay.
- * No HAL, no CubeMX.
+ * step. Pins are switched with BSRR (single write, no read-modify-write)
+ * and timed with a busy-wait delay. No HAL, no CubeMX.
  *
  * Board : STM32F407G-DISC1
  * Chip  : STM32F407VGT6
@@ -24,7 +24,7 @@
 /* Register pointers: exact address = base + offset */
 volatile uint32_t *const RCC_AHB1ENR = (volatile uint32_t *)(RCC_BASE + 0x30UL);   /* RCC_AHB1ENR: AHB1 peripheral clock enable */
 volatile uint32_t *const GPIOD_MODER = (volatile uint32_t *)(GPIOD_BASE + 0x00UL); /* GPIOx_MODER: pin mode */
-volatile uint32_t *const GPIOD_ODR   = (volatile uint32_t *)(GPIOD_BASE + 0x14UL); /* GPIOx_ODR: output data */
+volatile uint32_t *const GPIOD_BSRR  = (volatile uint32_t *)(GPIOD_BASE + 0x18UL); /* GPIOx_BSRR: bit set/reset (write-only). CHANGED: name was GPIOD_BSSR */
 
 /* Busy-wait delay of roughly ms milliseconds.
  * About 1000 loop passes per ms at 16 MHz (approximate).
@@ -36,14 +36,17 @@ void delay_ms(uint32_t ms){
 	}
 }
 
-/* Switch one LED on: set ODR bit j (pin PDj high) */
+/* Switch one LED on: write 1 to BSRR set bit j (BSj, bits 0-15), so pin PDj goes high.
+ * Writing 0 to the other bits does nothing, so a plain '=' is safe. */
 void led_set(uint32_t j){
-	*GPIOD_ODR |= (1UL << j);
+	*GPIOD_BSRR = (1UL << j);
 }
 
-/* Switch one LED off: clear ODR bit k (pin PDk low) */
+/* Switch one LED off: write 1 to BSRR reset bit k (BRx, bits 16-31).
+ * k is the BSRR bit number, not the pin: pin n's reset bit is n + 16,
+ * so k = 28 turns off PD12, k = 29 turns off PD13, and so on. */
 void led_reset(uint32_t k){
-	*GPIOD_ODR &= ~(1UL << k);
+	*GPIOD_BSRR = (1UL << k);
 }
 
 int main(void){
@@ -64,13 +67,13 @@ int main(void){
 
 	/* --- Loop forever --- */
 	while(1){
-		/* Fill: switch LEDs on one by one, PD12 → PD15 */
+		/* Fill: switch LEDs on one by one, PD12 → PD15 (set bits 12-15) */
 		for(uint32_t j = 12; j <= 15; j++){
 			led_set(j);
 			delay_ms(ms);
 		}
-		/* Empty: switch LEDs off one by one, PD12 → PD15 */
-		for(uint32_t k = 12; k <= 15; k++){
+		/* Empty: switch LEDs off one by one, PD12 → PD15 (reset bits 28-31) */
+		for(uint32_t k = 28; k <= 31; k++){
 			led_reset(k);
 			delay_ms(ms);
 		}
