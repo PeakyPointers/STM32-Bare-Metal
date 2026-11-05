@@ -1,0 +1,28 @@
+# ---- Build output (recreated every time you build) ----
+Debug/
+Release/
+*.o
+*.d
+*.su
+*.cyclo
+*.elf
+*.map
+*.list
+*.lst
+*.bin
+*.hex
+*.srec
+
+# ---- CubeIDE / Eclipse workspace and per-machine settings ----
+.metadata/
+.settings/
+*.launch
+RemoteSystemsTempFiles/
+
+# ---- Editor and OS junk ----
+.vscode/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
