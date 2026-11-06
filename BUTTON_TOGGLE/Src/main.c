@@ -1,16 +1,17 @@
 /**
  * P05: latched button toggle with simple debounce (bare-metal)
  *
- * Each press of the blue user button (B1) toggles the green LED (LD4):
- * press once and it turns on and stays on, press again and it turns off.
+ * Each press of the blue user button (B1) toggles all four user LEDs:
+ * press once and they turn on and stay on, press again and they turn off.
  * Presses are detected on the rising edge (released → pressed), and a
  * 50 ms wait after each "pressed" reading filters out contact bounce.
- * Button read with GPIOA_IDR; LED switched with BSRR. No HAL, no CubeMX.
+ * Button read with GPIOA_IDR; LEDs switched with BSRR. No HAL, no CubeMX.
  *
  * Board  : STM32F407G-DISC1
  * Chip   : STM32F407VGT6
  * Button : B1 (USER) on PA0, reads 1 when pressed (UM1472, push-buttons)
- * LED    : PD12 green (LD4)   (UM1472, LEDs section)
+ * LEDs   : PD12 green (LD4), PD13 orange (LD3),
+ *          PD14 red (LD5), PD15 blue (LD6)   (UM1472, LEDs section)
  * Clock  : 16 MHz internal HSI (default after reset)
  *
  * Reference: RM0090 (STM32F405/407 reference manual)
@@ -20,7 +21,7 @@
 
 /* Base addresses: RM0090, memory map (section 2.3) */
 #define RCC_BASE   0x40023800UL     /* RCC: Reset and Clock Control */
-#define GPIOD_BASE 0x40020C00UL     /* GPIO port D: LED */
+#define GPIOD_BASE 0x40020C00UL     /* GPIO port D: LEDs */
 #define GPIOA_BASE 0x40020000UL     /* GPIO port A: button */
 
 /* Register pointers: exact address = base + offset */
@@ -35,30 +36,31 @@ volatile uint32_t *const GPIOA_IDR   = (volatile uint32_t *)(GPIOA_BASE + 0x10UL
  * 'volatile' stops the compiler from removing the empty loop.
  * Returning true lets it be used inside an if-condition. */
 bool delay_ms(uint32_t ms){
-	volatile uint32_t i;
-	for(i = 0; i <= ms * 1000; i++){
+	for(uint32_t i = 0; i <= ms * 1000; i++){
 		/* waste time */
 	}
 	return 1;
 }
 
-/* Switch one LED on: write 1 to BSRR set bit j (BSj, bits 0-15), so pin PDj goes high.
+/* All four LEDs on: write 1 to BSRR set bits 12-15 (BS12 to BS15), PD12 to PD15 go high.
  * Writing 0 to the other bits does nothing, so a plain '=' is safe. */
-void led_set(uint32_t j){
-	*GPIOD_BSRR = (1UL << j);
+void led_set(){
+	for(uint32_t j = 12; j <= 15; j++){
+		*GPIOD_BSRR = (1UL << j);
+	}
 }
 
-/* Switch one LED off: write 1 to BSRR reset bit k (BRx, bits 16-31).
- * k is the BSRR bit number, not the pin: pin n's reset bit is n + 16,
- * so k = 28 turns off PD12. */
-void led_reset(uint32_t k){
-	*GPIOD_BSRR = (1UL << k);
+/* All four LEDs off: write 1 to BSRR reset bits 28-31 (BR12 to BR15).
+ * Pin n's reset bit is n + 16, so bits 28-31 turn off PD12 to PD15. */
+void led_reset(){
+	for(uint32_t k = 28; k <= 31; k++){
+		*GPIOD_BSRR = (1UL << k);
+	}
 }
 
 int main(void){
 	/* --- Setup, done once --- */
 	uint32_t ms = 50;               /* debounce wait */
-	uint32_t i = 12, j = 28;        /* PD12: BSRR set bit 12, reset bit 28 */
 
 	/* Switch on the clocks for port A (bit 0, GPIOAEN) and port D (bit 3, GPIODEN) */
 	*RCC_AHB1ENR |= (1UL << 0);
@@ -69,13 +71,16 @@ int main(void){
 	 * Only PA0's bits are touched: PA13/PA14 must stay as the ST-LINK's debug pins. */
 	*GPIOA_MODER &= ~(3UL << 00);
 
-	/* PD12 (LED) as output: MODER12 (bits 25:24) = 01 */
-	*GPIOD_MODER &= ~(3UL << 24);  /* clear the field to 00 */
-	*GPIOD_MODER |=  (1UL << 24);  /* set it to 01 = output */
-
 	bool last_button_state = false;     /* button reading on the previous pass */
 	bool latest_button_state = false;   /* button reading on this pass */
 	bool button_state_latched = false;  /* LED state: toggled on each press */
+
+	/* PD12 to PD15 (LEDs) as outputs: MODERx fields at bits 24, 26, 28, 30 = 01.
+	 * Pin n's 2-bit field starts at bit 2n, so step i by 2. */
+	for(uint32_t i = 24; i <= 30; i += 2){
+		*GPIOD_MODER &= ~(3UL << i);  /* clear the field to 00 */
+		*GPIOD_MODER |=  (1UL << i);  /* set it to 01 = output */
+	}
 
 	/* --- Loop forever --- */
 	while(1){
@@ -93,12 +98,12 @@ int main(void){
 			button_state_latched = !button_state_latched;
 		}
 
-		/* Drive the LED from the latched state */
+		/* Drive the LEDs from the latched state */
 		if(button_state_latched){
-			led_set(i);             /* PD12 on */
+			led_set();              /* all four on */
 		}
 		else{
-			led_reset(j);           /* PD12 off */
+			led_reset();            /* all four off */
 		}
 
 		/* This pass's reading becomes the previous one for the next pass */

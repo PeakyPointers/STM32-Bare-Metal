@@ -1,4 +1,4 @@
-17:10:48 **** Incremental Build of configuration Debug for project BUTTON_TOGGLE ****
+02:25:20 **** Incremental Build of configuration Debug for project BUTTON_TOGGLE ****
 make -j8 all 
 arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
 arm-none-eabi-gcc -o "BUTTON_TOGGLE.elf" @"objects.list"   -mcpu=cortex-m4 -T"E:\GitHub\STM32-Bare-Metal\BUTTON_TOGGLE\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BUTTON_TOGGLE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -7,15 +7,8 @@ Finished building target: BUTTON_TOGGLE.elf
 arm-none-eabi-size  BUTTON_TOGGLE.elf 
 arm-none-eabi-objdump -h -S BUTTON_TOGGLE.elf  > "BUTTON_TOGGLE.list"
    text	   data	    bss	    dec	    hex	filename
-    984	      0	   1568	   2552	    9f8	BUTTON_TOGGLE.elf
+   1044	      0	   1568	   2612	    a34	BUTTON_TOGGLE.elf
 Finished building: default.size.stdout
  
 Finished building: BUTTON_TOGGLE.list
- 
-17:11:04 **** Incremental Build of configuration Debug for project BUTTON_TOGGLE ****
-make -j8 all 
-arm-none-eabi-size  BUTTON_TOGGLE.elf 
-   text	   data	    bss	    dec	    hex	filename
-    984	      0	   1568	   2552	    9f8	BUTTON_TOGGLE.elf
-Finished building: default.size.stdout
  
