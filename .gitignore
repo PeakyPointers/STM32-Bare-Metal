@@ -1,25 +1,62 @@
-# ---- Build output (recreated every time you build) ----
+# ======================================================
+# STM32CubeIDE / Eclipse
+# ======================================================
+# Build output folders (recreated every build)
 Debug/
 Release/
+build/
+
+# Compiler and linker output
 *.o
+*.obj
 *.d
 *.su
 *.cyclo
+*.a
 *.elf
-*.map
-*.list
-*.lst
+*.axf
+*.out
 *.bin
 *.hex
 *.srec
+*.map
+*.list
+*.lst
 
-# ---- CubeIDE / Eclipse workspace and per-machine settings ----
+# Generated makefiles (live inside Debug/, listed for safety)
+makefile
+*.mk
+
+# Workspace and per-machine IDE settings
 .metadata/
 .settings/
 *.launch
 RemoteSystemsTempFiles/
 
-# ---- Editor and OS junk ----
+# ======================================================
+# CMake (for later)
+# ======================================================
+CMakeFiles/
+CMakeCache.txt
+cmake-build-*/
+compile_commands.json
+
+# ======================================================
+# Visual Studio (PC-side C tests)
+# ======================================================
+.vs/
+x64/
+x86/
+*.user
+*.pdb
+*.ilk
+*.exe
+*.idb
+*.ipch
+
+# ======================================================
+# Editors and OS
+# ======================================================
 .vscode/
 *.swp
 *~
