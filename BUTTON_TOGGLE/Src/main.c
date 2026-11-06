@@ -1,11 +1,12 @@
 /**
  * P05: latched button toggle with simple debounce (bare-metal)
  *
- * Each press of the blue user button (B1) toggles all four user LEDs:
- * press once and they turn on and stay on, press again and they turn off.
- * Presses are detected on the rising edge (released → pressed), and a
- * 50 ms wait after each "pressed" reading filters out contact bounce.
- * Button read with GPIOA_IDR; LEDs switched with BSRR. No HAL, no CubeMX.
+ * Each press of the blue user button (B1) toggles a blink mode: press once
+ * and all four user LEDs start blinking together (500 ms on, 500 ms off),
+ * press again and they stop and stay off. Presses are detected on the
+ * rising edge (released → pressed), and a 50 ms wait after each "pressed"
+ * reading filters out contact bounce. Button read with GPIOA_IDR; LEDs
+ * switched with BSRR. No HAL, no CubeMX.
  *
  * Board  : STM32F407G-DISC1
  * Chip   : STM32F407VGT6
@@ -33,7 +34,6 @@ volatile uint32_t *const GPIOA_IDR   = (volatile uint32_t *)(GPIOA_BASE + 0x10UL
 
 /* Busy-wait delay of roughly ms milliseconds, then return true.
  * About 1000 loop passes per ms at 16 MHz (approximate).
- * 'volatile' stops the compiler from removing the empty loop.
  * Returning true lets it be used inside an if-condition. */
 bool delay_ms(uint32_t ms){
 	for(uint32_t i = 0; i <= ms * 1000; i++){
@@ -73,7 +73,7 @@ int main(void){
 
 	bool last_button_state = false;     /* button reading on the previous pass */
 	bool latest_button_state = false;   /* button reading on this pass */
-	bool button_state_latched = false;  /* LED state: toggled on each press */
+	bool button_state_latched = false;  /* blink mode: toggled on each press */
 
 	/* PD12 to PD15 (LEDs) as outputs: MODERx fields at bits 24, 26, 28, 30 = 01.
 	 * Pin n's 2-bit field starts at bit 2n, so step i by 2. */
@@ -98,10 +98,14 @@ int main(void){
 			button_state_latched = !button_state_latched;
 		}
 
-		/* Drive the LEDs from the latched state */
+		/* Blink mode on: one blink of all four LEDs per pass (500 ms on, 500 ms off) */
 		if(button_state_latched){
 			led_set();              /* all four on */
+			delay_ms(500);
+			led_reset();            /* all four off */
+			delay_ms(500);
 		}
+		/* Blink mode off: keep all four LEDs off */
 		else{
 			led_reset();            /* all four off */
 		}

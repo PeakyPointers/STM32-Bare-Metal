@@ -1,8 +1,8 @@
 # P05: latched button toggle with simple debounce (bare-metal)
 
-Each press of the blue user button toggles all four user LEDs: press once and they turn on and stay on, press again and they turn off. No HAL, no CubeMX.
+Each press of the blue user button toggles a blink mode: press once and all four user LEDs start blinking together (500 ms on, 500 ms off), press again and they stop and stay off. No HAL, no CubeMX.
 
-Where P04 was **momentary** (acts only while the button is held), P05 is **latched**: the LEDs keep their state after the button is released.
+Where P04 was **momentary** (acts only while the button is held), P05 is **latched**: the mode stays on after the button is released, until the next press.
 
 ## Hardware
 - Board: STM32F407G-DISC1 (STM32F4-Discovery)
@@ -19,11 +19,12 @@ Where P04 was **momentary** (acts only while the button is held), P05 is **latch
 **Loop, repeated forever:**
 1. **Read the button** into `latest_button_state`. When it reads pressed, a 50 ms wait runs before the reading is accepted, to let contact bounce settle.
 2. **Detect the press edge:** if the button is pressed now but was released on the previous pass (`latest && !last`), toggle `button_state_latched`.
-3. **Drive the LEDs** from `button_state_latched`: BSRR set bits 12 to 15 for all on, reset bits 28 to 31 for all off.
-4. **Remember the reading:** `last_button_state = latest_button_state`.
+3. **Blink mode on:** switch all four LEDs on (BSRR set bits 12 to 15), wait 500 ms, switch them off (reset bits 28 to 31), wait 500 ms.
+4. **Blink mode off:** keep all four LEDs off.
+5. **Remember the reading:** `last_button_state = latest_button_state`.
 
 ## Edge detection
-Acting on the button's **level** (is it pressed?) would toggle the LEDs continuously while the button is held. Acting on the **edge** (released → pressed) toggles exactly once per press:
+Acting on the button's **level** (is it pressed?) would toggle the mode continuously while the button is held. Acting on the **edge** (released → pressed) toggles exactly once per press:
 
 | Previous | Now | Action |
 |---|---|---|
@@ -33,7 +34,10 @@ Acting on the button's **level** (is it pressed?) would toggle the LEDs continuo
 | 1 | 0 | none (released) |
 
 ## Bounce
-A mechanical button's contacts flicker for a few milliseconds when they meet or separate, so one press can look like several to a fast loop. Each flicker would toggle the LEDs, so a press could seem to be ignored. The 50 ms wait after a pressed reading filters most of this out.
+A mechanical button's contacts flicker for a few milliseconds when they meet or separate, so one press can look like several to a fast loop. The 50 ms wait after a pressed reading filters most of this out.
+
+## Known limitation
+While blinking, each pass of the loop takes about 1 second, so the button is only checked once per blink. A quick tap in the middle of a blink can be missed; holding the button until the blink completes always works. A non-blocking version, which checks the button continuously while blinking, comes in P07.
 
 ## Registers used
 | Register | Address | Bits | Operation | Meaning |
@@ -47,4 +51,4 @@ A mechanical button's contacts flicker for a few milliseconds when they meet or 
 All values come from RM0090 and UM1472.
 
 ## Build and run
-Open the project in STM32CubeIDE, build with the hammer icon, then click Run. Press the blue button to switch all four LEDs on; press again to switch them off.
+Open the project in STM32CubeIDE, build with the hammer icon, then click Run. Press the blue button: all four LEDs start blinking. Press again: they stop.
