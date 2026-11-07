@@ -1,21 +1,21 @@
-02:29:30 **** Incremental Build of configuration Debug for project BUTTON_TOGGLE ****
+05:34:12 **** Incremental Build of configuration Debug for project SYSTICK_DELAY ****
 make -j8 all 
 arm-none-eabi-gcc "../Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DSTM32 -DSTM32F4 -DSTM32F407VGTx -c -I../Inc -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Src/main.d" -MT"Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Src/main.o"
-arm-none-eabi-gcc -o "BUTTON_TOGGLE.elf" @"objects.list"   -mcpu=cortex-m4 -T"E:\GitHub\STM32-Bare-Metal\BUTTON_TOGGLE\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="BUTTON_TOGGLE.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: BUTTON_TOGGLE.elf
+arm-none-eabi-gcc -o "SYSTICK_DELAY.elf" @"objects.list"   -mcpu=cortex-m4 -T"E:\GitHub\STM32-Bare-Metal\SYSTICK_DELAY\STM32F407VGTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="SYSTICK_DELAY.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: SYSTICK_DELAY.elf
  
-arm-none-eabi-size  BUTTON_TOGGLE.elf 
-arm-none-eabi-objdump -h -S BUTTON_TOGGLE.elf  > "BUTTON_TOGGLE.list"
+arm-none-eabi-size  SYSTICK_DELAY.elf 
+arm-none-eabi-objdump -h -S SYSTICK_DELAY.elf  > "SYSTICK_DELAY.list"
    text	   data	    bss	    dec	    hex	filename
-   1064	      0	   1568	   2632	    a48	BUTTON_TOGGLE.elf
+   1140	      0	   1568	   2708	    a94	SYSTICK_DELAY.elf
 Finished building: default.size.stdout
  
-Finished building: BUTTON_TOGGLE.list
+Finished building: SYSTICK_DELAY.list
  
-02:29:40 **** Incremental Build of configuration Debug for project BUTTON_TOGGLE ****
+05:34:20 **** Incremental Build of configuration Debug for project SYSTICK_DELAY ****
 make -j8 all 
-arm-none-eabi-size  BUTTON_TOGGLE.elf 
+arm-none-eabi-size  SYSTICK_DELAY.elf 
    text	   data	    bss	    dec	    hex	filename
-   1064	      0	   1568	   2632	    a48	BUTTON_TOGGLE.elf
+   1140	      0	   1568	   2708	    a94	SYSTICK_DELAY.elf
 Finished building: default.size.stdout
  

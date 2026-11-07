@@ -1217,3 +1217,6 @@ COM7
 
 !ENTRY com.st.stm32cube.ide.mpu.remote.serial 1 1 2026-11-07 01:15:55.848
 !MESSAGE port: COM7
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-11-07 03:43:54.939
+!MESSAGE Indexed 'SYSTICK_DELAY' (3 sources, 53 headers) in 1.37 sec: 1,954 declarations; 2,867 references; 0 unresolved inclusions; 2 syntax errors; 0 unresolved names (0%)
