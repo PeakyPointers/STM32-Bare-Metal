@@ -1220,3 +1220,6 @@ COM7
 
 !ENTRY org.eclipse.cdt.core 1 0 2026-11-07 03:43:54.939
 !MESSAGE Indexed 'SYSTICK_DELAY' (3 sources, 53 headers) in 1.37 sec: 1,954 declarations; 2,867 references; 0 unresolved inclusions; 2 syntax errors; 0 unresolved names (0%)
+
+!ENTRY org.eclipse.cdt.core 1 0 2026-11-07 05:51:59.956
+!MESSAGE Indexed 'LED_SCHEDULER' (3 sources, 53 headers) in 0.844 sec: 1,954 declarations; 2,867 references; 0 unresolved inclusions; 2 syntax errors; 0 unresolved names (0%)
